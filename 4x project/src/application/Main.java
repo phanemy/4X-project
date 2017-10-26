@@ -41,7 +41,7 @@ public class Main extends Application {
 			
 			*/
 			root.getChildren().add(mapGroup);
-			Scene scene = new Scene(root,1280, 720);
+			Scene scene = new Scene(root,1920, 1080);
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {

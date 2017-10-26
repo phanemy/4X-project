@@ -3,6 +3,7 @@ package mapWidget;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -25,7 +26,7 @@ public class MapGroup extends Group{
 		this.map = map;
 		imageActualtSize = imageDefaultSize = TilesImageView.imageSize;
 		formatMap = new Vector2(map.getWidth()*imageActualtSize, map.getHeight()*imageActualtSize);
-		cameraSize = new Vector2(1280, 720);
+		cameraSize = new Vector2(1920, 1080);
 		zoom = 1f;
 		setFocus(0, 0);
 		createTileMap();
@@ -88,6 +89,7 @@ public class MapGroup extends Group{
 	
 	private boolean updateImageSize(float newZoom)
 	{
+		int oldSize = imageActualtSize;
 		int tempSize = (int) (imageDefaultSize * newZoom);
 		if(map.getWidth() * tempSize >= cameraSize.getX() && map.getHeight() * tempSize >= cameraSize.getY())
 		{
@@ -102,8 +104,12 @@ public class MapGroup extends Group{
 				}
 			}
 			
-			setFocus(cameraFocus.getX()-(map.getWidth()*(imageDefaultSize-imageActualtSize)),
-					cameraFocus.getY()-(map.getHeight()*(imageDefaultSize-imageActualtSize)));
+			Point2D actualPosition = new Point2D(cameraFocus.getX()/oldSize, cameraFocus.getY()/oldSize);
+			Point2D actualOffset = new Point2D(cameraFocus.getX()-actualPosition.getX()*oldSize,
+					cameraFocus.getX()-actualPosition.getX()*oldSize);
+			
+			setFocus((int)(actualPosition.getX()*imageActualtSize+ ((int)actualOffset.getX()*imageActualtSize/oldSize)),
+					(int)(actualPosition.getY()*imageActualtSize+ ((int)actualOffset.getY()*imageActualtSize/oldSize)));
 			updateTileMap();
 			return true;
 		}
@@ -144,6 +150,7 @@ public class MapGroup extends Group{
 				tileImageMap[x][y] = new TilesImageView(map.getTilesMap()[x][y]);
 				tileImageMap[x][y].setLayoutX((x*imageActualtSize)-(cameraFocus.getX()-cameraSize.getX()/2)-((imageDefaultSize-imageActualtSize)/2));
 				tileImageMap[x][y].setLayoutY((y*imageActualtSize)-(cameraFocus.getY()-cameraSize.getY()/2)-((imageDefaultSize-imageActualtSize)/2));
+				tileImageMap[x][y].setTranslateZ(-50);
 				this.getChildren().add(tileImageMap[x][y]);
 			}
 		}
